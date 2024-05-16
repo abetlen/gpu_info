@@ -1,0 +1,2 @@
+class GPUInfoProviderNotAvailable(Exception):
+    pass
