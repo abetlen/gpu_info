@@ -7,3 +7,8 @@ license = { text = "MIT" }
 authors = [
     { name = "Andrei Betlen", email = "abetlen@gmail.com" },
 ]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.4.0"
+]
