@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-from ._cudart import get_device_count, get_device_vram
+from ._cuda import get_device_count, get_device_vram
 
 class GPUInfo(typing.NamedTuple):
     total: int
