@@ -1,0 +1,9 @@
+[project]
+name = "gpu_info"
+dynamic = ["version"]
+description = "Library for getting GPU information for various platforms"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Andrei Betlen", email = "abetlen@gmail.com" },
+]
