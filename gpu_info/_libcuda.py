@@ -11,9 +11,9 @@ except OSError:
 libcuda.cuInit.argtypes = [ctypes.c_uint]
 libcuda.cuInit.restype = ctypes.c_int
 
-rc = libcuda.cuInit(0) != 0
+rc = libcuda.cuInit(0)
 if rc != 0:
-    raise RuntimeError(f"cuInit failed with error code {rc}")
+    raise GPUInfoProviderNotAvailable(f"cuInit failed with error code {rc}")
 
 libcuda.cuDeviceGet.argtypes = [ctypes.POINTER(ctypes.c_int), ctypes.c_int]
 libcuda.cuDeviceGet.restype = ctypes.c_int
