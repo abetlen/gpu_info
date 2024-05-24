@@ -38,5 +38,8 @@ def get_gpu_info(include_cpu: bool = False) -> typing.List[GPUInfo]:
         gpu_info.extend(GPUInfo("cuda", *info) for info in cuda_get_gpu_info())
     elif cudart_get_gpu_info is not None:
         gpu_info.extend(GPUInfo("cuda", *info) for info in cudart_get_gpu_info())
+    
+    if vulkan_get_gpu_info is not None:
+        gpu_info.extend(GPUInfo("vulkan", *info) for info in vulkan_get_gpu_info())
 
     return gpu_info
