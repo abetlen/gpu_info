@@ -4,6 +4,8 @@ import typing
 
 from ._exceptions import GPUInfoProviderNotAvailable
 
+from ._cpu import get_gpu_info as cpu_get_gpu_info
+
 try:
     from ._libcuda import get_gpu_info as cuda_get_gpu_info
 except GPUInfoProviderNotAvailable:
@@ -26,6 +28,8 @@ class GPUInfo(typing.NamedTuple):
 
 def get_gpu_info() -> typing.List[GPUInfo]:
     gpu_info: typing.List[GPUInfo] = []
+
+    gpu_info.extend(GPUInfo(*info) for info in cpu_get_gpu_info())
 
     if cuda_get_gpu_info is not None:
         gpu_info.extend(GPUInfo(*info) for info in cuda_get_gpu_info())
