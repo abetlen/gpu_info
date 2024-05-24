@@ -1,7 +1,7 @@
 import typing
 
-from ._types import GPUInfo
-from ._exceptions import GPUInfoProviderNotAvailable
+from .._types import GPUInfo
+from .._exceptions import GPUInfoProviderNotAvailable
 
 BACKEND = "vulkan"
 

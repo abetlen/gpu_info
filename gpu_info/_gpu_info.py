@@ -5,20 +5,20 @@ import typing
 from ._types import GPUInfo
 from ._exceptions import GPUInfoProviderNotAvailable
 
-from ._cpu import get_info as cpu_get_gpu_info
+from .providers._cpu import get_info as cpu_get_gpu_info
 
 try:
-    from ._libcuda import get_info as cuda_get_gpu_info
+    from .providers._libcuda import get_info as cuda_get_gpu_info
 except GPUInfoProviderNotAvailable:
     cuda_get_gpu_info = None
 
 try:
-    from ._libcudart import get_info as cudart_get_gpu_info
+    from .providers._libcudart import get_info as cudart_get_gpu_info
 except GPUInfoProviderNotAvailable:
     cudart_get_gpu_info = None
 
 try:
-    from ._vulkan import get_info as vulkan_get_gpu_info
+    from .providers._vulkan import get_info as vulkan_get_gpu_info
 except GPUInfoProviderNotAvailable:
     vulkan_get_gpu_info = None
 

@@ -1,7 +1,7 @@
 import os
 import platform
 
-from ._types import GPUInfo
+from .._types import GPUInfo
 
 BACKEND = "cpu"
 
