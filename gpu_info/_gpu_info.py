@@ -21,19 +21,22 @@ try:
 except GPUInfoProviderNotAvailable:
     vulkan_get_gpu_info = None
 
+
 class GPUInfo(typing.NamedTuple):
+    backend: str
     total: int
     free: int
 
 
-def get_gpu_info() -> typing.List[GPUInfo]:
+def get_gpu_info(include_cpu: bool = False) -> typing.List[GPUInfo]:
     gpu_info: typing.List[GPUInfo] = []
 
-    gpu_info.extend(GPUInfo(*info) for info in cpu_get_gpu_info())
+    if include_cpu:
+        gpu_info.extend(GPUInfo("cpu", *info) for info in cpu_get_gpu_info())
 
     if cuda_get_gpu_info is not None:
-        gpu_info.extend(GPUInfo(*info) for info in cuda_get_gpu_info())
+        gpu_info.extend(GPUInfo("cuda", *info) for info in cuda_get_gpu_info())
     elif cudart_get_gpu_info is not None:
-        gpu_info.extend(GPUInfo(*info) for info in cudart_get_gpu_info())
+        gpu_info.extend(GPUInfo("cuda", *info) for info in cudart_get_gpu_info())
 
     return gpu_info
