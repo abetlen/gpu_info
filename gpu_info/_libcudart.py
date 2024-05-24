@@ -36,5 +36,8 @@ def get_device_vram(device: int) -> typing.Tuple[int, int]:
     return total.value, free.value
 
 def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
-    count = get_device_count()
+    try:
+        count = get_device_count()
+    except RuntimeError:
+        return []
     return [get_device_vram(i) for i in range(count)]
