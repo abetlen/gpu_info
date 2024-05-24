@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "gpu_info"
 dynamic = ["version"]
@@ -7,6 +11,9 @@ license = { text = "MIT" }
 authors = [
     { name = "Andrei Betlen", email = "abetlen@gmail.com" },
 ]
+
+[project.scripts]
+gpu_info = "gpu_info.__cli__:main"
 
 [project.optional-dependencies]
 test = [
