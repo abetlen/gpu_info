@@ -1,5 +1,4 @@
 import typing
-
 from ._exceptions import GPUInfoProviderNotAvailable
 
 try:
@@ -8,7 +7,7 @@ except ImportError:
     raise GPUInfoProviderNotAvailable()
 
 def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
-    def find_max_allocatable_memory(device: int, memory_type_index: int, heap_size: int) -> int:
+    def find_max_allocatable_memory(device, memory_type_index: int, heap_size: int) -> int:
         memory_allocate_info = vk.VkMemoryAllocateInfo(
             sType=vk.VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
             allocationSize=heap_size,
@@ -20,6 +19,9 @@ def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
         max_allocatable = 0
 
         while low <= high:
+            # if less than 100mb, then we can allocate it
+            if high - low < 100000000:
+                return high
             mid = (low + high) // 2
             memory_allocate_info.allocationSize = mid
             try:
@@ -64,7 +66,24 @@ def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
 
             for j in range(mem_properties.memoryTypeCount):
                 if mem_properties.memoryTypes[j].heapIndex == i:
-                    max_allocatable_memory = find_max_allocatable_memory(device, j, total_memory)
+                    # Create a logical device
+                    queue_family_index = 0  # Assuming first queue family for simplicity
+                    queue_create_info = vk.VkDeviceQueueCreateInfo(
+                        sType=vk.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+                        queueFamilyIndex=queue_family_index,
+                        queueCount=1,
+                        pQueuePriorities=[1.0]
+                    )
+                    device_create_info = vk.VkDeviceCreateInfo(
+                        sType=vk.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+                        queueCreateInfoCount=1,
+                        pQueueCreateInfos=[queue_create_info]
+                    )
+                    logical_device = vk.vkCreateDevice(device, device_create_info, None)
+
+                    max_allocatable_memory = find_max_allocatable_memory(logical_device, j, total_memory)
+                    vk.vkDestroyDevice(logical_device, None)
+
                     if max_allocatable_memory > max_free_memory:
                         max_free_memory = max_allocatable_memory
             
