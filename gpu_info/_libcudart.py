@@ -1,7 +1,10 @@
 import ctypes
 import typing
 
+from ._types import GPUInfo
 from ._exceptions import GPUInfoProviderNotAvailable
+
+BACKEND = "cuda"
 
 try:
     libcudart = ctypes.CDLL("libcudart.so")
@@ -14,8 +17,12 @@ libcudart.cudaSetDevice.restype = ctypes.c_int
 libcudart.cudaGetDeviceCount.argtypes = [ctypes.POINTER(ctypes.c_int)]
 libcudart.cudaGetDeviceCount.restype = ctypes.c_int
 
-libcudart.cudaMemGetInfo.argtypes = [ctypes.POINTER(ctypes.c_size_t), ctypes.POINTER(ctypes.c_size_t)]
+libcudart.cudaMemGetInfo.argtypes = [
+    ctypes.POINTER(ctypes.c_size_t),
+    ctypes.POINTER(ctypes.c_size_t),
+]
 libcudart.cudaMemGetInfo.restype = ctypes.c_int
+
 
 def get_device_count() -> int:
     count = ctypes.c_int()
@@ -23,6 +30,7 @@ def get_device_count() -> int:
     if rc != 0:
         raise RuntimeError(f"cudaGetDeviceCount failed with error code {rc}")
     return count.value
+
 
 def get_device_vram(device: int) -> typing.Tuple[int, int]:
     rc = libcudart.cudaSetDevice(device)
@@ -35,9 +43,17 @@ def get_device_vram(device: int) -> typing.Tuple[int, int]:
         raise RuntimeError(f"cudaMemGetInfo failed with error code {rc}")
     return total.value, free.value
 
+
 def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
     try:
         count = get_device_count()
     except RuntimeError:
         return []
     return [get_device_vram(i) for i in range(count)]
+
+
+def get_info():
+    return [
+        GPUInfo(backend=BACKEND, total_memory=total, free_memory=free)
+        for total, free in get_gpu_info()
+    ]

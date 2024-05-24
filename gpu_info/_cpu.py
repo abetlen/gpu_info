@@ -1,6 +1,10 @@
 import os
 import platform
 
+from ._types import GPUInfo
+
+BACKEND = "cpu"
+
 
 def _get_memory_info():
     if platform.system() == "Windows":
@@ -29,3 +33,14 @@ def _get_memory_info():
 def get_gpu_info():
     total_memory_gb, free_memory_gb = _get_memory_info()
     return [(total_memory_gb, free_memory_gb)]
+
+
+def get_info():
+    total_memory_gb, free_memory_gb = _get_memory_info()
+    return [
+        GPUInfo(
+            backend=BACKEND,
+            total_memory=total_memory_gb,
+            free_memory=free_memory_gb,
+        )
+    ]

@@ -1,19 +1,26 @@
 import typing
+
+from ._types import GPUInfo
 from ._exceptions import GPUInfoProviderNotAvailable
+
+BACKEND = "vulkan"
 
 try:
     import vulkan as vk
 except ImportError:
     raise GPUInfoProviderNotAvailable()
 
+
 def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
-    def find_max_allocatable_memory(device, memory_type_index: int, heap_size: int) -> int:
+    def find_max_allocatable_memory(
+        device, memory_type_index: int, heap_size: int
+    ) -> int:
         memory_allocate_info = vk.VkMemoryAllocateInfo(
             sType=vk.VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
             allocationSize=heap_size,
-            memoryTypeIndex=memory_type_index
+            memoryTypeIndex=memory_type_index,
         )
-        
+
         low = 0
         high = heap_size
         max_allocatable = 0
@@ -37,16 +44,15 @@ def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
     # Initialize Vulkan instance
     app_info = vk.VkApplicationInfo(
         sType=vk.VK_STRUCTURE_TYPE_APPLICATION_INFO,
-        pApplicationName='Vulkan Memory Info',
+        pApplicationName="Vulkan Memory Info",
         applicationVersion=vk.VK_MAKE_VERSION(1, 0, 0),
-        pEngineName='No Engine',
+        pEngineName="No Engine",
         engineVersion=vk.VK_MAKE_VERSION(1, 0, 0),
-        apiVersion=vk.VK_API_VERSION_1_0
+        apiVersion=vk.VK_API_VERSION_1_0,
     )
 
     create_info = vk.VkInstanceCreateInfo(
-        sType=vk.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        pApplicationInfo=app_info
+        sType=vk.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, pApplicationInfo=app_info
     )
 
     instance = vk.vkCreateInstance(create_info, None)
@@ -72,21 +78,23 @@ def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
                         sType=vk.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
                         queueFamilyIndex=queue_family_index,
                         queueCount=1,
-                        pQueuePriorities=[1.0]
+                        pQueuePriorities=[1.0],
                     )
                     device_create_info = vk.VkDeviceCreateInfo(
                         sType=vk.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
                         queueCreateInfoCount=1,
-                        pQueueCreateInfos=[queue_create_info]
+                        pQueueCreateInfos=[queue_create_info],
                     )
                     logical_device = vk.vkCreateDevice(device, device_create_info, None)
 
-                    max_allocatable_memory = find_max_allocatable_memory(logical_device, j, total_memory)
+                    max_allocatable_memory = find_max_allocatable_memory(
+                        logical_device, j, total_memory
+                    )
                     vk.vkDestroyDevice(logical_device, None)
 
                     if max_allocatable_memory > max_free_memory:
                         max_free_memory = max_allocatable_memory
-            
+
             if total_memory > max_total_memory:
                 max_total_memory = total_memory
 
@@ -96,3 +104,10 @@ def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
     vk.vkDestroyInstance(instance, None)
 
     return memory_info_list
+
+
+def get_info():
+    return [
+        GPUInfo(backend="vulkan", total_memory=total, free_memory=free)
+        for total, free in get_gpu_info()
+    ]

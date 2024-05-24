@@ -1,7 +1,10 @@
 import ctypes
 import typing
 
+from ._types import GPUInfo
 from ._exceptions import GPUInfoProviderNotAvailable
+
+BACKEND = "cuda"
 
 try:
     libcuda = ctypes.CDLL("libcuda.so")
@@ -72,3 +75,10 @@ def get_device_vram(device: int) -> typing.Tuple[int, int]:
 def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
     count = get_device_count()
     return [get_device_vram(i) for i in range(count)]
+
+
+def get_info():
+    return [
+        GPUInfo(backend=BACKEND, total_memory=total, free_memory=free)
+        for total, free in get_gpu_info()
+    ]
