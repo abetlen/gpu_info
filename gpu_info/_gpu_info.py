@@ -32,7 +32,4 @@ def get_gpu_info() -> typing.List[GPUInfo]:
     elif cudart_get_gpu_info is not None:
         gpu_info.extend(GPUInfo(*info) for info in cudart_get_gpu_info())
 
-    if vulkan_get_gpu_info is not None:
-        gpu_info.extend(GPUInfo(*info) for info in vulkan_get_gpu_info())
-
     return gpu_info
