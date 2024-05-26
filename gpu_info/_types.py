@@ -6,6 +6,7 @@ class GPUInfo:
     """Dataclass for GPU information"""
 
     backend: str
+    provider: str
     total_memory: int
     free_memory: int
 

@@ -5,6 +5,7 @@ from .._types import GPUInfo
 from .._exceptions import GPUInfoProviderNotAvailable
 
 BACKEND = "cuda"
+PROVIDER = __name__
 
 try:
     libcuda = ctypes.CDLL("libcuda.so")
@@ -79,6 +80,8 @@ def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
 
 def get_info():
     return [
-        GPUInfo(backend=BACKEND, total_memory=total, free_memory=free)
+        GPUInfo(
+            backend=BACKEND, provider=PROVIDER, total_memory=total, free_memory=free
+        )
         for total, free in get_gpu_info()
     ]

@@ -4,6 +4,7 @@ from .._types import GPUInfo
 from .._exceptions import GPUInfoProviderNotAvailable
 
 BACKEND = "vulkan"
+PROVIDER = __name__
 
 try:
     import vulkan as vk
@@ -108,6 +109,8 @@ def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
 
 def get_info():
     return [
-        GPUInfo(backend="vulkan", total_memory=total, free_memory=free)
+        GPUInfo(
+            backend=BACKEND, provider=PROVIDER, total_memory=total, free_memory=free
+        )
         for total, free in get_gpu_info()
     ]

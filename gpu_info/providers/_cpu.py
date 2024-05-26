@@ -4,6 +4,7 @@ import platform
 from .._types import GPUInfo
 
 BACKEND = "cpu"
+PROVIDER = __name__
 
 
 def _get_memory_info():
@@ -40,6 +41,7 @@ def get_info():
     return [
         GPUInfo(
             backend=BACKEND,
+            provider=PROVIDER,
             total_memory=total_memory_gb,
             free_memory=free_memory_gb,
         )
