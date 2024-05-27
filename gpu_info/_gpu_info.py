@@ -22,6 +22,11 @@ try:
 except GPUInfoProviderNotAvailable:
     vulkan_get_gpu_info = None
 
+try:
+    from .providers._metal_info import get_info as metal_get_gpu_info
+except GPUInfoProviderNotAvailable:
+    metal_get_gpu_info = None
+
 
 def get_gpu_info(include_cpu: bool = False) -> typing.List[GPUInfo]:
     gpu_info: typing.List[GPUInfo] = []
@@ -36,5 +41,8 @@ def get_gpu_info(include_cpu: bool = False) -> typing.List[GPUInfo]:
 
     if vulkan_get_gpu_info is not None:
         gpu_info.extend(vulkan_get_gpu_info())
+
+    if metal_get_gpu_info is not None:
+        gpu_info.extend(metal_get_gpu_info())
 
     return gpu_info
