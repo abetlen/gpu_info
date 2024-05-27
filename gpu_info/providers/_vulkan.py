@@ -12,7 +12,9 @@ except ImportError:
     raise GPUInfoProviderNotAvailable()
 
 
-def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
+def get_gpu_info(
+    skip_free_mem_estimate: bool = True,
+) -> typing.List[typing.Tuple[int, int]]:
     def find_max_allocatable_memory(
         device, memory_type_index: int, heap_size: int
     ) -> int:
@@ -88,9 +90,12 @@ def get_gpu_info() -> typing.List[typing.Tuple[int, int]]:
                     )
                     logical_device = vk.vkCreateDevice(device, device_create_info, None)
 
-                    max_allocatable_memory = find_max_allocatable_memory(
-                        logical_device, j, total_memory
-                    )
+                    if skip_free_mem_estimate:
+                        max_allocatable_memory = total_memory
+                    else:
+                        max_allocatable_memory = find_max_allocatable_memory(
+                            logical_device, j, total_memory
+                        )
                     vk.vkDestroyDevice(logical_device, None)
 
                     if max_allocatable_memory > max_free_memory:
