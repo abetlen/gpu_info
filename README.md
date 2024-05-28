@@ -11,7 +11,7 @@ pip install gpu_info git+https://github.com/abetlen/gpu_info.git
 ```python
 import gpu_info
 
-print(gpu_info.get_info())
+print(gpu_info.get_gpu_info()))
 ```
 
 ## Providers
